@@ -16,21 +16,7 @@ import Essays from "@/pages/essays";
 import Universities from "@/pages/universities";
 import Resources from "@/pages/resources";
 
-function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  // Show loading state while auth is being checked
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
+function Router({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
     <Switch>
       {!isAuthenticated ? (
@@ -59,10 +45,24 @@ function AppContent() {
     "--sidebar-width-icon": "4rem",
   } as React.CSSProperties;
 
+  // Show loading state while auth is being checked
+  if (isLoading) {
+    return (
+      <ThemeProvider defaultTheme="light">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
-        {!isLoading && isAuthenticated ? (
+        {isAuthenticated ? (
           <SidebarProvider style={style}>
             <div className="flex h-screen w-full">
               <AppSidebar />
@@ -72,13 +72,13 @@ function AppContent() {
                   <ThemeToggle />
                 </header>
                 <main className="flex-1 overflow-y-auto">
-                  <Router />
+                  <Router isAuthenticated={isAuthenticated} />
                 </main>
               </div>
             </div>
           </SidebarProvider>
         ) : (
-          <Router />
+          <Router isAuthenticated={isAuthenticated} />
         )}
         <Toaster />
       </TooltipProvider>
