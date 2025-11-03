@@ -50,7 +50,7 @@ function Router() {
   );
 }
 
-function App() {
+function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   
   // Custom sidebar width for better content layout
@@ -60,30 +60,36 @@ function App() {
   } as React.CSSProperties;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          {!isLoading && isAuthenticated ? (
-            <SidebarProvider style={style}>
-              <div className="flex h-screen w-full">
-                <AppSidebar />
-                <div className="flex flex-col flex-1 overflow-hidden">
-                  <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                    <SidebarTrigger data-testid="button-sidebar-toggle" />
-                    <ThemeToggle />
-                  </header>
-                  <main className="flex-1 overflow-y-auto">
-                    <Router />
-                  </main>
-                </div>
+    <ThemeProvider defaultTheme="light">
+      <TooltipProvider>
+        {!isLoading && isAuthenticated ? (
+          <SidebarProvider style={style}>
+            <div className="flex h-screen w-full">
+              <AppSidebar />
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                  <SidebarTrigger data-testid="button-sidebar-toggle" />
+                  <ThemeToggle />
+                </header>
+                <main className="flex-1 overflow-y-auto">
+                  <Router />
+                </main>
               </div>
-            </SidebarProvider>
-          ) : (
-            <Router />
-          )}
-          <Toaster />
-        </TooltipProvider>
-      </ThemeProvider>
+            </div>
+          </SidebarProvider>
+        ) : (
+          <Router />
+        )}
+        <Toaster />
+      </TooltipProvider>
+    </ThemeProvider>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
     </QueryClientProvider>
   );
 }
