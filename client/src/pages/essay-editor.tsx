@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,8 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import type { Essay } from "@shared/schema";
 import { Link } from "wouter";
 
+type EssayWithContent = Essay & { content?: string };
+
 export default function EssayEditor() {
   const [, params] = useRoute("/essays/:id");
   const essayId = params?.id;
@@ -29,10 +31,16 @@ export default function EssayEditor() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [feedback, setFeedback] = useState<any>(null);
 
-  const { data: essay, isLoading } = useQuery<Essay>({
+  const { data: essay, isLoading } = useQuery<EssayWithContent>({
     queryKey: ["/api/essays", essayId],
     enabled: !!essayId,
   });
+
+  useEffect(() => {
+    if (essay?.content) {
+      setContent(essay.content);
+    }
+  }, [essay]);
 
   const saveEssayMutation = useMutation({
     mutationFn: async (data: { content: string }) => {
@@ -72,6 +80,7 @@ export default function EssayEditor() {
       return await apiRequest("POST", `/api/essays/${essayId}/feedback`, { content });
     },
     onSuccess: (data) => {
+      console.log("Feedback received:", data);
       setFeedback(data);
       toast({
         title: "Feedback generated",
@@ -245,7 +254,7 @@ export default function EssayEditor() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Overall Score */}
-                {feedback.overallScore && (
+                {feedback.overallScore !== undefined && feedback.overallScore !== null && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">Overall Score</span>
@@ -265,7 +274,7 @@ export default function EssayEditor() {
                       <BookOpen className="h-4 w-4 text-primary" />
                       Tone
                     </div>
-                    <p className="text-sm text-muted-foreground">{feedback.tone}</p>
+                    <p className="text-sm text-muted-foreground" data-testid="text-feedback-tone">{feedback.tone}</p>
                   </div>
                 )}
 
@@ -276,7 +285,7 @@ export default function EssayEditor() {
                       <Target className="h-4 w-4 text-primary" />
                       Clarity
                     </div>
-                    <p className="text-sm text-muted-foreground">{feedback.clarity}</p>
+                    <p className="text-sm text-muted-foreground" data-testid="text-feedback-clarity">{feedback.clarity}</p>
                   </div>
                 )}
 
@@ -287,7 +296,7 @@ export default function EssayEditor() {
                       <FileText className="h-4 w-4 text-primary" />
                       Storytelling
                     </div>
-                    <p className="text-sm text-muted-foreground">{feedback.storytelling}</p>
+                    <p className="text-sm text-muted-foreground" data-testid="text-feedback-storytelling">{feedback.storytelling}</p>
                   </div>
                 )}
 
@@ -300,14 +309,29 @@ export default function EssayEditor() {
                       <Lightbulb className="h-4 w-4 text-primary" />
                       Suggestions
                     </div>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2" data-testid="list-feedback-suggestions">
                       {feedback.suggestions.map((suggestion: string, index: number) => (
-                        <li key={index} className="text-sm text-muted-foreground flex gap-2">
+                        <li key={index} className="text-sm text-muted-foreground flex gap-2" data-testid={`suggestion-${index}`}>
                           <span className="text-primary">•</span>
                           <span>{suggestion}</span>
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {/* Debug info - show if feedback exists but has no visible content */}
+                {!feedback.tone && !feedback.clarity && !feedback.storytelling && (!feedback.suggestions || feedback.suggestions.length === 0) && (
+                  <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg space-y-2">
+                    <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                      Feedback was received but appears to be empty. Please try generating feedback again.
+                    </p>
+                    <details className="text-xs">
+                      <summary className="cursor-pointer font-medium">Debug: View Raw Feedback Data</summary>
+                      <pre className="mt-2 p-2 bg-black/10 dark:bg-white/10 rounded overflow-auto max-h-40">
+                        {JSON.stringify(feedback, null, 2)}
+                      </pre>
+                    </details>
                   </div>
                 )}
               </CardContent>

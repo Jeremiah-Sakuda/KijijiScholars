@@ -43,6 +43,7 @@ export interface IStorage {
   
   // Essay version operations
   getEssayVersions(essayId: string): Promise<EssayVersion[]>;
+  getLatestEssayVersion(essayId: string): Promise<EssayVersion | undefined>;
   createEssayVersion(data: InsertEssayVersion): Promise<EssayVersion>;
   
   // University operations
@@ -165,6 +166,16 @@ export class DatabaseStorage implements IStorage {
       .from(essayVersions)
       .where(eq(essayVersions.essayId, essayId))
       .orderBy(desc(essayVersions.version));
+  }
+  
+  async getLatestEssayVersion(essayId: string): Promise<EssayVersion | undefined> {
+    const [version] = await db
+      .select()
+      .from(essayVersions)
+      .where(eq(essayVersions.essayId, essayId))
+      .orderBy(desc(essayVersions.version))
+      .limit(1);
+    return version;
   }
   
   async createEssayVersion(data: InsertEssayVersion): Promise<EssayVersion> {

@@ -106,7 +106,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Essay not found" });
       }
       
-      res.json(essay);
+      const latestVersion = await storage.getLatestEssayVersion(id);
+      
+      res.json({
+        ...essay,
+        content: latestVersion?.content || "",
+      });
     } catch (error) {
       console.error("Error fetching essay:", error);
       res.status(500).json({ message: "Failed to fetch essay" });
@@ -219,6 +224,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const { content } = req.body;
       
+      console.log("[AI Feedback] Request received for essay:", id);
+      console.log("[AI Feedback] Content length:", content?.length);
+      
       if (!content || typeof content !== 'string') {
         return res.status(400).json({ message: "Essay content is required" });
       }
@@ -229,8 +237,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Essay not found" });
       }
       
+      console.log("[AI Feedback] Calling OpenAI...");
       // Get AI feedback
       const feedback = await getEssayFeedback(content, essay.prompt || undefined);
+      console.log("[AI Feedback] Received feedback:", JSON.stringify(feedback, null, 2));
       
       res.json(feedback);
     } catch (error) {

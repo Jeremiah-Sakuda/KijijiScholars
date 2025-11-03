@@ -33,27 +33,32 @@ Please provide feedback in the following format:
 Format your response as JSON with keys: tone, clarity, storytelling, suggestions (array), overallScore (number).
 `;
 
-    // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+    // Using gpt-4o for reliable AI feedback generation
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      max_completion_tokens: 8192,
+      max_completion_tokens: 2048,
     });
 
     const content = response.choices[0]?.message?.content || "{}";
+    console.log("[OpenAI] Raw response content:", content);
     const feedback = JSON.parse(content);
+    console.log("[OpenAI] Parsed feedback:", JSON.stringify(feedback, null, 2));
     
-    return {
+    const result = {
       tone: feedback.tone || "Unable to analyze tone",
       clarity: feedback.clarity || "Unable to analyze clarity",
       storytelling: feedback.storytelling || "Unable to analyze storytelling",
       suggestions: feedback.suggestions || [],
       overallScore: feedback.overallScore || 5
     };
+    
+    console.log("[OpenAI] Returning result:", JSON.stringify(result, null, 2));
+    return result;
   } catch (error) {
     console.error("Error getting AI feedback:", error);
     throw new Error("Failed to generate AI feedback");
