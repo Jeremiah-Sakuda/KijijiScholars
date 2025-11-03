@@ -32,6 +32,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user academic scores
+  app.patch("/api/auth/user/academic-scores", isAuthenticated, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const updatedUser = await storage.upsertUser({
+        ...user,
+        academicScores: req.body,
+      });
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating academic scores:", error);
+      res.status(500).json({ message: "Failed to update academic scores" });
+    }
+  });
+
   // Roadmap routes
   app.get("/api/roadmap", isAuthenticated, async (req, res) => {
     try {

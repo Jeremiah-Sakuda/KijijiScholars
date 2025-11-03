@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import type { RoadmapProgress, UserAchievement, Essay } from "@shared/schema";
+import { AcademicProfile } from "@/components/AcademicProfile";
 
 export default function Dashboard() {
   const { data: roadmapData, isLoading: loadingRoadmap } = useQuery<RoadmapProgress[]>({
@@ -212,6 +213,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       ) : null}
+
+      {/* Academic Profile */}
+      <AcademicProfile />
     </div>
   );
 }
