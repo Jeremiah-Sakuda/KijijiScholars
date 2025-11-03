@@ -1,0 +1,174 @@
+Excellent — focusing on the **web app** gives you a clear foundation for what can scale digitally before adding cohorts and community programs.
+
+Here’s a detailed, **product-style description** for the **Kijiji Scholars Web App**, written as if it were being pitched to partners, developers, or early users.
+
+---
+
+# 🌍 **Kijiji Scholars Web App**
+
+### *Your roadmap to studying in the U.S., built for Kenyan students.*
+
+---
+
+## 💡 **Overview**
+
+The **Kijiji Scholars Web App** is an all-in-one digital platform that guides Kenyan students through every stage of the U.S. college application process — from research to essays, scholarships, and visas.
+It replaces confusion, scattered information, and expensive private consultancies with a **structured, personalized, and community-powered online experience.**
+
+The platform brings the *"village spirit"* into the digital age — combining **AI tools, local context, and peer mentorship** to help students craft successful applications.
+
+---
+
+## 🧭 **Core Purpose**
+
+> To make global education accessible by giving Kenyan students clear, affordable, and culturally relevant tools to navigate the U.S. college admissions process.
+
+---
+
+## ⚙️ **Key Features**
+
+### 1. 🧱 **Step-by-Step Application Roadmap**
+
+A dynamic, visual guide breaking the U.S. college process into actionable phases:
+
+* Researching schools & majors
+* Building your extracurricular profile
+* Writing and revising personal essays
+* Navigating Common App & Coalition App
+* Applying for financial aid (CSS Profile, FAFSA equivalents)
+* Preparing for interviews and visa steps
+
+Each stage includes:
+
+* Checklists tailored to your timeline
+* Resource articles and video tutorials
+* Sample documents from successful Kenyan applicants
+
+---
+
+### 2. 📝 **AI-Powered Essay Lab**
+
+An intelligent writing assistant built for *college essays, not grammar drills.*
+
+* Upload drafts for feedback on tone, clarity, and storytelling.
+* Get actionable suggestions from AI trained on admission essay best practices.
+* Option to request human feedback from Kijiji mentors (Phase 2).
+* Tracks progress across revisions and highlights “growth” over time.
+
+**Example:**
+
+> “Your essay is informative, but your story would resonate more if you added a personal reflection on how growing up in Kisumu shaped your interest in public policy.”
+
+---
+
+### 3. 🎯 **University & Scholarship Matcher**
+
+Smart filters and AI suggestions based on:
+
+* Grades / KCSE performance
+* Intended major or career goal
+* Budget and financial aid need
+* Personal interests (e.g., liberal arts, research, athletics)
+
+Outputs a ranked list of:
+
+* **U.S. universities** that match the student’s academic profile
+* **Scholarships and need-based aid programs** (Davis Scholars, Mastercard, etc.)
+* **Application deadlines** and links to each school’s requirements
+
+---
+
+### 4. 👩🏽‍💻 **Personal Dashboard**
+
+Centralized progress tracking:
+
+* Application milestones completed
+* Essay drafts saved and versioned
+* Recommended next actions
+* Calendar with important deadlines
+* Optional mentorship reminders
+
+Students can also export progress reports or share updates with parents or counselors.
+
+---
+
+### 5. 💬 **Peer Discussion Boards (Phase 2)**
+
+Each student joins a virtual *“village”* of peers applying in the same cycle.
+
+* Share advice, review essays, and celebrate wins.
+* Topic-based forums (Essays, Scholarships, Visa Prep).
+* Moderated by mentors and alumni currently studying in the U.S.
+
+---
+
+### 6. 💰 **Financial Aid Resource Hub**
+
+Comprehensive and localized:
+
+* Guides to FAFSA, CSS Profile, and institutional aid
+* Tips for writing financial need statements
+* Lists of colleges that meet 100% demonstrated need for internationals
+* Real success stories from Kenyan students who secured funding
+
+---
+
+## 🧩 **Design & Experience**
+
+| Principle               | Description                                                            |
+| ----------------------- | ---------------------------------------------------------------------- |
+| **Human-Centered**      | Every page feels personal, encouraging, and culturally familiar.       |
+| **Guided Flow**         | Linear progress from “Start” to “Submit.” No overwhelming choices.     |
+| **Mobile-First**        | Optimized for low-bandwidth and smartphone use across Kenya.           |
+| **Gamified Progress**   | Badges for milestones like “Essay Complete” or “Deadline Ready.”       |
+| **Local Language Tone** | English UI with familiar Swahili and Kenyan phrasing woven throughout. |
+
+---
+
+## 🧠 **Tech Stack (Proposed)**
+
+* **Frontend:** React / Next.js
+* **Backend:** Node.js + Firebase / Supabase
+* **AI Integration:** Gemini API or GPT for essay feedback
+* **Database:** Firestore or Postgres (for user data, progress tracking)
+* **UI Framework:** TailwindCSS + Shadcn/UI (for clean and professional design)
+
+---
+
+## 💰 **Monetization Model**
+
+| Tier              | Features                                                 | Pricing                        |
+| ----------------- | -------------------------------------------------------- | ------------------------------ |
+| **Free**          | Roadmap, Resource Hub, limited essay feedback            | Free                           |
+| **Pro (Student)** | Full Essay Lab, Matcher, AI feedback, progress dashboard | KSh 1,500–3,000/month ($10–20) |
+| **Pro (School)**  | Teacher dashboard, student monitoring, bulk access       | Custom                         |
+| **Add-ons**       | 1:1 mentorship, essay review, bootcamps                  | Pay-per-service                |
+
+---
+
+## 📈 **Future Integrations**
+
+* AI-powered **SAT prep** section
+* **Visa interview simulator** (AI-generated Q&A practice)
+* **Post-admission transition guide** (arrival, housing, culture tips)
+* **Alumni mentorship** module for networking after acceptance
+
+---
+
+## 🌟 **Value Proposition**
+
+| For Students                            | For Parents                     | For Schools                            |
+| --------------------------------------- | ------------------------------- | -------------------------------------- |
+| Clear, affordable U.S. college guidance | Trusted and transparent process | Structured counseling support          |
+| AI-driven feedback & tracking           | Realistic scholarship insights  | Scalable solution for student advising |
+| Community accountability                | Less stress and uncertainty     | Better placement outcomes              |
+
+---
+
+## 🏁 **Vision Statement**
+
+> Kijiji Scholars will become the digital bridge between Kenyan talent and global opportunity — equipping every student, regardless of background, with the roadmap, confidence, and support to thrive abroad.
+
+---
+
+Would you like me to now create a **Notion-style product spec** (with user personas, feature breakdowns, and MVP deliverables)? It would be perfect for presenting to a development team or applying for Innovate@BU or education funding rounds.
