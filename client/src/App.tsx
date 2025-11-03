@@ -13,6 +13,7 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Roadmap from "@/pages/roadmap";
 import Essays from "@/pages/essays";
+import EssayEditor from "@/pages/essay-editor";
 import Universities from "@/pages/universities";
 import Resources from "@/pages/resources";
 
@@ -27,6 +28,7 @@ function Router({ isAuthenticated }: { isAuthenticated: boolean }) {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/roadmap" component={Roadmap} />
           <Route path="/essays" component={Essays} />
+          <Route path="/essays/:id" component={EssayEditor} />
           <Route path="/universities" component={Universities} />
           <Route path="/resources" component={Resources} />
         </>
