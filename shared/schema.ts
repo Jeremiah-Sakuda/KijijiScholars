@@ -13,6 +13,17 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Essay Feedback type (not stored in DB, returned from AI)
+export const essayFeedbackSchema = z.object({
+  tone: z.string(),
+  clarity: z.string(),
+  storytelling: z.string(),
+  suggestions: z.array(z.string()),
+  overallScore: z.number().min(1).max(10),
+});
+
+export type EssayFeedback = z.infer<typeof essayFeedbackSchema>;
+
 // Session storage table (mandatory for Replit Auth)
 export const sessions = pgTable(
   "sessions",

@@ -18,7 +18,7 @@ import {
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import type { Essay } from "@shared/schema";
+import type { Essay, EssayFeedback } from "@shared/schema";
 import { Link } from "wouter";
 
 type EssayWithContent = Essay & { content?: string };
@@ -29,7 +29,7 @@ export default function EssayEditor() {
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [feedback, setFeedback] = useState<any>(null);
+  const [feedback, setFeedback] = useState<EssayFeedback | null>(null);
 
   const { data: essay, isLoading } = useQuery<EssayWithContent>({
     queryKey: ["/api/essays", essayId],
@@ -77,7 +77,8 @@ export default function EssayEditor() {
 
   const getFeedbackMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("POST", `/api/essays/${essayId}/feedback`, { content });
+      const response = await apiRequest("POST", `/api/essays/${essayId}/feedback`, { content });
+      return await response.json() as EssayFeedback;
     },
     onSuccess: (data) => {
       console.log("Feedback received:", data);
