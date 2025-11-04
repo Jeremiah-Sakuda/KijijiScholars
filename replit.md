@@ -8,11 +8,12 @@ Kijiji Scholars is a web application designed to guide Kenyan students through t
 - Step-by-step application roadmap with progress tracking
 - AI-powered essay feedback and version control (using OpenAI GPT-4o)
 - University matching and filtering system with College Scorecard API integration
+- **Personalized university recommendations based on intended major**
 - Scholarship database with IEFA-sourced scholarships
 - Financial aid resources (CSS Profile, FAFSA guidance)
 - Gamified progress tracking with achievements
 - Resource library for scholarships and application guidance
-- Academic profile for KCSE/A-Level scores
+- Academic profile for KCSE/A-Level scores and intended major selection
 
 ## User Preferences
 
@@ -82,12 +83,12 @@ Preferred communication style: Simple, everyday language.
 **Schema Design:**
 
 Core tables:
-- `users` - User profiles (required for Replit Auth integration) with academic scores stored as JSONB
+- `users` - User profiles (required for Replit Auth integration) with academic scores stored as JSONB and intendedMajor field for personalization
 - `sessions` - Session storage (required for Replit Auth)
 - `roadmapProgress` - Tracks completion of application phases per user
 - `essays` - Student essay documents with versioning support
 - `essayVersions` - Version history for essay revisions
-- `universities` - University database with College Scorecard integration (scorecardId, tuition, admission rates, completion rates, SAT/ACT scores, median earnings)
+- `universities` - University database with College Scorecard integration (scorecardId, tuition, admission rates, completion rates, SAT/ACT scores, median earnings, majors array for recommendation matching)
 - `scholarships` - Scholarship opportunities with IEFA integration (iefaId, field of study, host countries, nationality restrictions)
 - `achievements` - Gamification badges and milestones
 - `userAchievements` - Junction table for earned achievements
@@ -176,3 +177,33 @@ All schemas export Zod validation schemas via `drizzle-zod` for runtime validati
 
 **Environment Requirements:**
 - `COLLEGE_SCORECARD_API_KEY` must be set for university imports
+
+## Recent Updates (November 2025)
+
+### Personalized University Recommendations
+
+**Feature:** Users can now select their intended major in the Profile page to receive personalized university recommendations.
+
+**Implementation:**
+- Added `intendedMajor` varchar field to users table
+- Created Profile page (`/profile`) with major selection dropdown featuring 26 common majors
+- Profile accessible via clickable user avatar in sidebar footer
+- Added PATCH `/api/auth/user/intended-major` endpoint for saving major preference
+- Universities page now filters and prioritizes schools offering the selected major
+- "Recommended" badges appear on matching universities
+- Toggle button to show only recommended universities
+- Banner prompts users to set major if not yet selected
+
+**User Flow:**
+1. User navigates to Profile page (click avatar in sidebar)
+2. Selects intended major from dropdown (Computer Science, Engineering, Biology, etc.)
+3. Clicks "Save Major" button
+4. Universities page automatically shows personalized recommendations
+5. Recommended schools appear first with "Recommended" badge
+6. User can toggle to view only recommended universities
+
+**Technical Details:**
+- Major matching uses university majors array from College Scorecard data
+- Case-insensitive substring matching for flexibility (e.g., "Computer" matches "Computer Science")
+- State synchronization via useEffect ensures selected major displays correctly on profile page load
+- TanStack Query cache invalidation ensures UI updates immediately after save
