@@ -53,7 +53,7 @@ The platform provides:
 - **ORM:** Drizzle ORM (PostgreSQL via Neon Serverless)  
 - **Database:** PostgreSQL  
 - **API Architecture:** RESTful routes under `/api/*`  
-- **Auth:** Replit Auth (OIDC) with secure session storage  
+- **Auth:** Google Auth with secure session storage  
 - **AI Integration:** OpenAI GPT-4o for structured essay feedback  
 - **External APIs:**  
   - College Scorecard (U.S. Department of Education)  
