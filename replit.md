@@ -163,3 +163,16 @@ All schemas export Zod validation schemas via `drizzle-zod` for runtime validati
 - Separate build processes for client (Vite) and server (ESBuild)
 - Static assets served from `dist/public/`
 - Server bundle output to `dist/`
+
+### Database Seeding
+
+**Seed Script:** `server/seed.ts`
+- Populates database with initial scholarships and universities
+- Run with: `npx tsx server/seed.ts`
+- Seeds 5 scholarships (2 IEFA + 3 Kenyan-focused)
+- Seeds ~39 universities from College Scorecard API
+- Uses upsert methods to prevent duplicates
+- Includes rate limiting for API calls
+
+**Environment Requirements:**
+- `COLLEGE_SCORECARD_API_KEY` must be set for university imports
