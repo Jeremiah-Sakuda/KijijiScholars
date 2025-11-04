@@ -157,14 +157,19 @@ export const insertEssayVersionSchema = createInsertSchema(essayVersions).omit({
   createdAt: true,
 });
 
-// Universities database
+// Universities database - enhanced with College Scorecard data
 export const universities = pgTable("universities", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  scorecardId: integer("scorecard_id").unique(), // College Scorecard API ID
   name: varchar("name", { length: 255 }).notNull(),
+  city: varchar("city", { length: 100 }),
+  state: varchar("state", { length: 50 }),
   location: varchar("location", { length: 255 }),
   type: varchar("type", { length: 100 }), // liberal arts, research, etc
-  acceptanceRate: integer("acceptance_rate"), // percentage
+  acceptanceRate: integer("acceptance_rate"), // percentage (0-100)
   averageKCSEScore: integer("average_kcse_score"),
+  tuitionInState: integer("tuition_in_state"),
+  tuitionOutOfState: integer("tuition_out_of_state"),
   tuitionUSD: integer("tuition_usd"),
   financialAidAvailable: boolean("financial_aid_available").default(false),
   meetFullNeed: boolean("meet_full_need").default(false),
@@ -173,30 +178,50 @@ export const universities = pgTable("universities", {
   websiteUrl: varchar("website_url", { length: 500 }),
   imageUrl: varchar("image_url", { length: 500 }),
   description: text("description"),
+  // College Scorecard fields
+  completionRate: integer("completion_rate"), // graduation rate percentage
+  studentSize: integer("student_size"),
+  averageCostOfAttendance: integer("average_cost_of_attendance"),
+  medianEarnings: integer("median_earnings"), // 10 years after entry
+  satScoreAverage: integer("sat_score_average"),
+  actScoreAverage: integer("act_score_average"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export type University = typeof universities.$inferSelect;
 export type InsertUniversity = typeof universities.$inferInsert;
 
-// Scholarships database
+// Scholarships database - enhanced for IEFA scraping
 export const scholarships = pgTable("scholarships", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  iefaId: varchar("iefa_id", { length: 100 }).unique(), // IEFA scholarship ID
   name: varchar("name", { length: 255 }).notNull(),
   organization: varchar("organization", { length: 255 }),
   amountUSD: integer("amount_usd"),
+  amountRange: varchar("amount_range", { length: 100 }), // e.g., "$1,000 - $5,000"
   eligibility: text("eligibility"),
   deadline: varchar("deadline", { length: 100 }),
   applicationUrl: varchar("application_url", { length: 500 }),
   forKenyanStudents: boolean("for_kenyan_students").default(true),
   needBased: boolean("need_based").default(false),
   meritBased: boolean("merit_based").default(false),
+  fieldOfStudy: varchar("field_of_study", { length: 255 }), // major/field restriction
+  hostCountries: text("host_countries").array(), // countries where you can study
+  nationality: varchar("nationality", { length: 255 }), // eligible nationalities
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export type Scholarship = typeof scholarships.$inferSelect;
 export type InsertScholarship = typeof scholarships.$inferInsert;
+
+export const insertScholarshipSchema = createInsertSchema(scholarships).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 // Achievements/Badges system
 export const achievements = pgTable("achievements", {

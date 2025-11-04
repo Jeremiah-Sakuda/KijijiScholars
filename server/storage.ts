@@ -48,9 +48,11 @@ export interface IStorage {
   
   // University operations
   getUniversities(): Promise<University[]>;
+  upsertUniversity(data: Partial<University>): Promise<University>;
   
   // Scholarship operations
   getScholarships(): Promise<Scholarship[]>;
+  upsertScholarship(data: Partial<Scholarship>): Promise<Scholarship>;
   
   // Achievement operations
   getUserAchievements(userId: string): Promise<UserAchievement[]>;
@@ -190,10 +192,68 @@ export class DatabaseStorage implements IStorage {
   async getUniversities(): Promise<University[]> {
     return await db.select().from(universities);
   }
+
+  async upsertUniversity(data: Partial<University>): Promise<University> {
+    // If scorecardId exists, try to update existing record
+    if (data.scorecardId) {
+      const existing = await db
+        .select()
+        .from(universities)
+        .where(eq(universities.scorecardId, data.scorecardId));
+      
+      if (existing.length > 0) {
+        const [updated] = await db
+          .update(universities)
+          .set({
+            ...data,
+            updatedAt: new Date(),
+          })
+          .where(eq(universities.scorecardId, data.scorecardId))
+          .returning();
+        return updated;
+      }
+    }
+    
+    // Otherwise insert new record
+    const [university] = await db
+      .insert(universities)
+      .values(data as any)
+      .returning();
+    return university;
+  }
   
   // Scholarship operations
   async getScholarships(): Promise<Scholarship[]> {
     return await db.select().from(scholarships);
+  }
+
+  async upsertScholarship(data: Partial<Scholarship>): Promise<Scholarship> {
+    // If iefaId exists, try to update existing record
+    if (data.iefaId) {
+      const existing = await db
+        .select()
+        .from(scholarships)
+        .where(eq(scholarships.iefaId, data.iefaId));
+      
+      if (existing.length > 0) {
+        const [updated] = await db
+          .update(scholarships)
+          .set({
+            ...data,
+            updatedAt: new Date(),
+          })
+          .where(eq(scholarships.iefaId, data.iefaId))
+          .returning();
+        return updated;
+      }
+    }
+    
+    // Otherwise insert new record
+    const [scholarship] = await db
+      .insert(scholarships)
+      .values(data as any)
+      .returning();
+    return scholarship;
   }
   
   // Achievement operations

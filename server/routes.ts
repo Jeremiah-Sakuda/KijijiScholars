@@ -260,6 +260,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search College Scorecard (read-only for unauthenticated users)
+  app.get("/api/universities/search-scorecard", async (req, res) => {
+    try {
+      const { name, state, page } = req.query;
+      
+      const { searchUniversities } = await import("./collegeScorecard");
+      const results = await searchUniversities({
+        name: name as string,
+        state: state as string,
+        page: page ? parseInt(page as string) : 0,
+        perPage: 20,
+      });
+
+      res.json(results);
+    } catch (error) {
+      console.error("Error searching College Scorecard:", error);
+      res.status(500).json({ message: "Failed to search universities" });
+    }
+  });
+
+  // Import universities from College Scorecard
+  app.post("/api/universities/import-scorecard", isAuthenticated, async (req, res) => {
+    try {
+      const { scorecardIds } = req.body;
+      
+      if (!Array.isArray(scorecardIds) || scorecardIds.length === 0) {
+        return res.status(400).json({ message: "scorecardIds array is required" });
+      }
+
+      const { getUniversityById, transformScorecardToUniversity } = await import("./collegeScorecard");
+      const imported = [];
+
+      for (const scorecardId of scorecardIds) {
+        const school = await getUniversityById(scorecardId);
+        if (school) {
+          const universityData = transformScorecardToUniversity(school);
+          const saved = await storage.upsertUniversity(universityData);
+          imported.push(saved);
+        }
+      }
+
+      res.json({ imported: imported.length, universities: imported });
+    } catch (error) {
+      console.error("Error importing universities:", error);
+      res.status(500).json({ message: "Failed to import universities" });
+    }
+  });
+
   // Scholarship routes
   app.get("/api/scholarships", async (req, res) => {
     try {
@@ -268,6 +316,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching scholarships:", error);
       res.status(500).json({ message: "Failed to fetch scholarships" });
+    }
+  });
+
+  // Import scholarships from IEFA (with sample data for now)
+  app.post("/api/scholarships/import-iefa", isAuthenticated, async (req, res) => {
+    try {
+      const { scrapeIEFAScholarships, transformIEFAToScholarship, getKenyanFocusedScholarships } = await import("./iefaScraper");
+      
+      // Get IEFA scholarships (sample data for now)
+      const iefaScholarships = await scrapeIEFAScholarships({});
+      
+      // Also add Kenyan-focused scholarships
+      const kenyanScholarships = getKenyanFocusedScholarships();
+      
+      const imported = [];
+      
+      // Import IEFA scholarships
+      for (const iefaScholarship of iefaScholarships) {
+        const scholarshipData = transformIEFAToScholarship(iefaScholarship);
+        const saved = await storage.upsertScholarship(scholarshipData);
+        imported.push(saved);
+      }
+      
+      // Import Kenyan-focused scholarships
+      for (const kenyanScholarship of kenyanScholarships) {
+        const scholarshipData = {
+          ...kenyanScholarship,
+          forKenyanStudents: true,
+        };
+        const saved = await storage.upsertScholarship(scholarshipData);
+        imported.push(saved);
+      }
+
+      res.json({ imported: imported.length, scholarships: imported });
+    } catch (error) {
+      console.error("Error importing scholarships:", error);
+      res.status(500).json({ message: "Failed to import scholarships" });
     }
   });
 

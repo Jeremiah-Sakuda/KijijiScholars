@@ -6,11 +6,13 @@ Kijiji Scholars is a web application designed to guide Kenyan students through t
 
 **Core Features:**
 - Step-by-step application roadmap with progress tracking
-- AI-powered essay feedback and version control
-- University matching and filtering system
+- AI-powered essay feedback and version control (using OpenAI GPT-4o)
+- University matching and filtering system with College Scorecard API integration
+- Scholarship database with IEFA-sourced scholarships
 - Financial aid resources (CSS Profile, FAFSA guidance)
 - Gamified progress tracking with achievements
 - Resource library for scholarships and application guidance
+- Academic profile for KCSE/A-Level scores
 
 ## User Preferences
 
@@ -80,17 +82,20 @@ Preferred communication style: Simple, everyday language.
 **Schema Design:**
 
 Core tables:
-- `users` - User profiles (required for Replit Auth integration)
+- `users` - User profiles (required for Replit Auth integration) with academic scores stored as JSONB
 - `sessions` - Session storage (required for Replit Auth)
 - `roadmapProgress` - Tracks completion of application phases per user
 - `essays` - Student essay documents with versioning support
 - `essayVersions` - Version history for essay revisions
-- `universities` - University database with matching criteria
-- `scholarships` - Scholarship opportunities and requirements
+- `universities` - University database with College Scorecard integration (scorecardId, tuition, admission rates, completion rates, SAT/ACT scores, median earnings)
+- `scholarships` - Scholarship opportunities with IEFA integration (iefaId, field of study, host countries, nationality restrictions)
 - `achievements` - Gamification badges and milestones
 - `userAchievements` - Junction table for earned achievements
 
 All schemas export Zod validation schemas via `drizzle-zod` for runtime validation.
+
+**Shared Types:**
+- `EssayFeedback` - Structured AI feedback type (tone, clarity, storytelling, suggestions, overallScore)
 
 ### Authentication & Authorization
 
@@ -115,9 +120,23 @@ All schemas export Zod validation schemas via `drizzle-zod` for runtime validati
 
 **AI Integration:** OpenAI API via Replit AI Integrations
 - Configured in `server/openai.ts`
-- Uses GPT-5 model for essay feedback generation
+- Uses GPT-4o model for essay feedback generation
 - Structured JSON responses for consistent parsing
 - Provides tone, clarity, storytelling analysis with actionable suggestions
+
+**College Scorecard API:** U.S. Department of Education
+- Configured in `server/collegeScorecard.ts`
+- Provides comprehensive university data (tuition, admission rates, completion rates, earnings)
+- API key managed via Replit Secrets (COLLEGE_SCORECARD_API_KEY)
+- Base URL: https://api.data.gov/ed/collegescorecard/v1/schools
+- Endpoints: Search universities, import by ID, transform to internal format
+
+**IEFA Scholarship Integration:** 
+- Configured in `server/iefaScraper.ts`
+- Placeholder implementation for scholarship scraping from IEFA.org
+- Curated Kenyan-focused scholarships (MasterCard Foundation, USAID, Fulbright)
+- Sample MPOWER scholarships included
+- Production implementation would require proper web scraping with rate limiting
 
 **Component Libraries:**
 - Radix UI: Accessible component primitives (@radix-ui/react-*)
