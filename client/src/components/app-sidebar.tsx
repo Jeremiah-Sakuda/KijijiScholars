@@ -74,20 +74,22 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3 p-3 rounded-lg hover-elevate">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.profileImageUrl || undefined} className="object-cover" />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" data-testid="text-user-name">
-              {user?.firstName && user?.lastName 
-                ? `${user.firstName} ${user.lastName}`
-                : user?.email || "User"}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+        <Link href="/profile">
+          <div className="flex items-center gap-3 p-3 rounded-lg hover-elevate cursor-pointer" data-testid="link-profile">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user?.profileImageUrl || undefined} className="object-cover" />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate" data-testid="text-user-name">
+                {user?.firstName && user?.lastName 
+                  ? `${user.firstName} ${user.lastName}`
+                  : user?.email || "User"}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
           </div>
-        </div>
+        </Link>
         <a
           href="/api/logout"
           className="flex items-center gap-2 w-full p-3 text-sm rounded-lg hover-elevate text-muted-foreground hover:text-foreground"

@@ -42,6 +42,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  intendedMajor: varchar("intended_major", { length: 255 }),
   academicScores: jsonb("academic_scores").$type<{
     kcseGrade?: string;
     kcsePoints?: number;

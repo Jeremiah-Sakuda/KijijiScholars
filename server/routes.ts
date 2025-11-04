@@ -53,6 +53,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user intended major
+  app.patch("/api/auth/user/intended-major", isAuthenticated, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { intendedMajor } = req.body;
+      if (typeof intendedMajor !== 'string') {
+        return res.status(400).json({ message: "Invalid major" });
+      }
+
+      const updatedUser = await storage.upsertUser({
+        ...user,
+        intendedMajor,
+      });
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating intended major:", error);
+      res.status(500).json({ message: "Failed to update intended major" });
+    }
+  });
+
   // Roadmap routes
   app.get("/api/roadmap", isAuthenticated, async (req, res) => {
     try {

@@ -18,14 +18,22 @@ import {
   DollarSign,
   ExternalLink,
   Circle,
-  TrendingUp
+  TrendingUp,
+  Star,
+  Info
 } from "lucide-react";
-import type { University, Scholarship } from "@shared/schema";
+import { Link } from "wouter";
+import type { University, Scholarship, User } from "@shared/schema";
 
 export default function Universities() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [aidFilter, setAidFilter] = useState<string>("all");
+  const [showRecommendedOnly, setShowRecommendedOnly] = useState(false);
+
+  const { data: user } = useQuery<User>({
+    queryKey: ["/api/auth/user"],
+  });
 
   const { data: universities, isLoading: loadingUniversities } = useQuery<University[]>({
     queryKey: ["/api/universities"],
@@ -34,6 +42,15 @@ export default function Universities() {
   const { data: scholarships, isLoading: loadingScholarships } = useQuery<Scholarship[]>({
     queryKey: ["/api/scholarships"],
   });
+
+  const isRecommended = (uni: University) => {
+    if (!user?.intendedMajor) return false;
+    
+    return uni.majorsOffered?.some(major => 
+      major.toLowerCase().includes(user.intendedMajor!.toLowerCase()) ||
+      user.intendedMajor!.toLowerCase().includes(major.toLowerCase())
+    ) || false;
+  };
 
   const filteredUniversities = universities?.filter(uni => {
     const matchesSearch = !searchQuery || 
@@ -46,7 +63,16 @@ export default function Universities() {
       (aidFilter === "full-need" && uni.meetFullNeed) ||
       (aidFilter === "aid-available" && uni.financialAidAvailable);
     
-    return matchesSearch && matchesType && matchesAid;
+    const matchesRecommended = !showRecommendedOnly || isRecommended(uni);
+    
+    return matchesSearch && matchesType && matchesAid && matchesRecommended;
+  }).sort((a, b) => {
+    if (!user?.intendedMajor) return 0;
+    const aRecommended = isRecommended(a);
+    const bRecommended = isRecommended(b);
+    if (aRecommended && !bRecommended) return -1;
+    if (!aRecommended && bRecommended) return 1;
+    return 0;
   });
 
   const formatCurrency = (amount: number | null | undefined) => {
@@ -68,6 +94,55 @@ export default function Universities() {
           Discover universities that match your profile and goals
         </p>
       </div>
+
+      {/* Recommendation prompt */}
+      {!user?.intendedMajor && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium mb-1">Get Personalized Recommendations</p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Select your intended major in your profile to see universities that offer programs matching your interests.
+                </p>
+                <Link href="/profile">
+                  <Button size="sm" data-testid="button-set-major">
+                    Set Your Major
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recommended filter toggle */}
+      {user?.intendedMajor && (
+        <Card className="border-primary/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Star className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium">Recommended for {user.intendedMajor}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {filteredUniversities?.filter(isRecommended).length || 0} universities match your major
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant={showRecommendedOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowRecommendedOnly(!showRecommendedOnly)}
+                data-testid="button-toggle-recommended"
+              >
+                {showRecommendedOnly ? "Show All" : "Recommended Only"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card>
@@ -145,7 +220,15 @@ export default function Universities() {
                 </div>
               )}
               <CardHeader className="flex-1">
-                <CardTitle className="font-heading text-lg line-clamp-2">{uni.name}</CardTitle>
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="font-heading text-lg line-clamp-2 flex-1">{uni.name}</CardTitle>
+                  {isRecommended(uni) && (
+                    <Badge className="bg-primary text-primary-foreground flex-shrink-0" data-testid={`badge-recommended-${uni.id}`}>
+                      <Star className="h-3 w-3 mr-1" />
+                      Recommended
+                    </Badge>
+                  )}
+                </div>
                 {uni.location && (
                   <CardDescription className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />

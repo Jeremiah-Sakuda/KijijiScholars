@@ -16,6 +16,7 @@ import Essays from "@/pages/essays";
 import EssayEditor from "@/pages/essay-editor";
 import Universities from "@/pages/universities";
 import Resources from "@/pages/resources";
+import Profile from "@/pages/profile";
 
 function Router({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
@@ -31,6 +32,7 @@ function Router({ isAuthenticated }: { isAuthenticated: boolean }) {
           <Route path="/essays/:id" component={EssayEditor} />
           <Route path="/universities" component={Universities} />
           <Route path="/resources" component={Resources} />
+          <Route path="/profile" component={Profile} />
         </>
       )}
       <Route component={NotFound} />
